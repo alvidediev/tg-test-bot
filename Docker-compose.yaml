@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # Сервис нашего Java-бота
+  bot:
+    build: . # Мы скоро создадим Dockerfile для сборки нашего приложения
+    container_name: tg_bot
+    restart: unless-stopped
+    environment:
+      # Передаем переменные из .env файла
+      - DB_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - R2DBC_URL=r2dbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_BOT_WEBHOOK_PATH=${TELEGRAM_BOT_WEBHOOK_PATH}
+    depends_on:
+      - postgres
+    networks:
+      - bot-network
+
+  # Сервис базы данных PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: tg_postgres
+    restart: unless-stopped
+    environment:
+      # Используем те же переменные из .env файла
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      # Сохраняем данные БД между перезапусками контейнера
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bot-network
+
+  # Сервис ngrok для создания публичного URL
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: tg_ngrok
+    restart: unless-stopped
+    environment:
+      # Передаем токен аутентификации из .env файла
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    command:
+      # Команда для ngrok: создать туннель к сервису 'bot' на порт 8080
+      - "http"
+      - "bot:8080"
+    ports:
+      # Пробрасываем порт для веб-интерфейса ngrok, чтобы смотреть запросы
+      - "4040:4040"
+    depends_on:
+      - bot
+    networks:
+      - bot-network
+
+volumes:
+  postgres_data:
+
+networks:
+  bot-network:

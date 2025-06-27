@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: tg-test-bot
+telegram:
+  bot:
+    username: snptgtestbot
+    token: 7547525460:AAFkPC03wRNogQmErT-FoHM4gqiXbNgCrkM
+    path: path
