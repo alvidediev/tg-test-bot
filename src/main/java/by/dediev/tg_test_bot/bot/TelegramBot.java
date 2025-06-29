@@ -19,6 +19,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 @Component
 @Getter
 @Slf4j
@@ -65,11 +67,15 @@ public class TelegramBot {
 
             // Обработка команды /report
             if ("/report".equals(messageText)) {
-                return tempDataRepository.findAll()
-                        .collectList()
-                        .flatMap(reportService::generateReport)
-                        .flatMap(bytes -> telegramDocumentSender.sendDocument(chatId ,bytes))
-                        .doOnError(err -> log.error("Error while saving report! Details: {}", err.getMessage()));
+
+                return userRepository.findByChatId(chatId)
+                                .flatMap(userEntity ->tempDataRepository.findAll()
+                                        .filter(entityInFlux -> Objects.equals(entityInFlux.getId(), userEntity.getId()))
+                                        .collectList()
+                                        .flatMap(reportService::generateReport)
+                                        .flatMap(bytes -> telegramDocumentSender.sendDocument(chatId ,bytes))
+                                        .doOnError(err -> log.error("Error while saving report! Details: {}", err.getMessage())) );
+
             }
 
             // Обработка ввода имени

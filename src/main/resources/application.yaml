@@ -2,11 +2,11 @@ spring:
   application:
     name: tg-test-bot
   r2dbc:
-    url: r2dbc:postgresql://localhost:8081/testbotdb
+    url: r2dbc:postgresql://postgres:5432/testbotdb
     username: postgres
     password: postgres
   flyway:
-    url: jdbc:postgresql://localhost:8081/testbotdb
+    url: jdbc:postgresql://postgres:5432/testbotdb
     user: postgres
     password: postgres
 
@@ -18,6 +18,6 @@ logging:
 
 telegram:
   bot:
-    username: snptgtestbot
-    token: 7547525460:AAFkPC03wRNogQmErT-FoHM4gqiXbNgCrkM
-    path: path
+    username: ${TELEGRAM_BOT_USERNAME:snptgtestbot}
+    token: ${TELEGRAM_BOT_TOKEN:7547525460:AAFkPC03wRNogQmErT-FoHM4gqiXbNgCrkM}
+    path: ${TELEGRAM_BOT_PATH:path}

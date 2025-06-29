@@ -7,10 +7,16 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/testbotdb
+      - SPRING_R2DBC_USERNAME=postgres
+      - SPRING_R2DBC_PASSWORD=postgres
+      - SPRING_FLYWAY_URL=jdbc:postgresql://postgres:5432/testbotdb
+      - SPRING_FLYWAY_USER=postgres
+      - SPRING_FLYWAY_PASSWORD=postgres
     networks:
       - bot-network
 
-  # Сервис базы данных PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: tg_postgres
@@ -19,8 +25,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=testbotdb
-    ports:
-      - "8081:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
