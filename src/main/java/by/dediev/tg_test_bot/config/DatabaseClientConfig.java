@@ -63,7 +63,7 @@ public class DatabaseClientConfig {
     @Bean
     @ConditionalOnMissingBean(ConnectionFactory.class)
     public ConnectionFactory connectionFactory(R2dbcProperties properties,
-                                               @Value("${spring.application.name:account-balance}") String name) {
+                                               @Value("${spring.application.name:tg-test-bot}") String name) {
         return getConnectionFactory(properties, name);
     }
 }

@@ -1,6 +1,21 @@
 spring:
   application:
     name: tg-test-bot
+  r2dbc:
+    url: r2dbc:postgresql://localhost:8081/testbotdb
+    username: postgres
+    password: postgres
+  flyway:
+    url: jdbc:postgresql://localhost:8081/testbotdb
+    user: postgres
+    password: postgres
+
+logging:
+  level:
+    root: INFO
+  charset:
+    console: UTF-8
+
 telegram:
   bot:
     username: snptgtestbot
